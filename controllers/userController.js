@@ -61,7 +61,7 @@ module.exports = {
       .then((user) =>
         !user
           ? res.status(404).json({ message: 'No user with request ID' })
-          : Thought.deleteMany({ _id: { $in: user.thought } })
+          : Thought.deleteMany({ _id: { $in: user.thoughts } })
       )
       .then(() => res.json({ message: 'User and associated thought are deleted!' }))
       .catch((err) => res.status(500).json(err));
@@ -71,12 +71,13 @@ module.exports = {
   addFriend(req, res) {
     User.findOneAndUpdate(
       { _id: req.params.userId },
-      { $addToSet: { friends: req.params.friendId } },
+      // { $push: { friends: req.params._id } },
+      { $addToSet: { friends: req.body } },
       { runValidators: true, new: true }
     )
       .then((user) =>
         !user
-          ? res.status(404).json({ message: "No user with request ID" })
+          ? res.status(404).json({ message: "Friend created witout user associated" })
           : res.json(user)
       )
       .catch((err) => res.status(500).json(err));
@@ -87,7 +88,7 @@ module.exports = {
     User.findOneAndUpdate(
       { _id: req.params.userId },
       { $pull: { friends: req.params.friendId } },
-      { new: true }
+      { runValidators: true,new: true }
     )
       .then((user) =>
           !user

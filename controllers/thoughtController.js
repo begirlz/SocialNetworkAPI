@@ -10,7 +10,7 @@ module.exports = {
 
     // get thought by ID
     getSingleThought(req, res) {
-        Thought.findOne({ _id: req.params.userId })
+        Thought.findOne({ _id: req.params.thoughtId })
             .select('-__v')
             .then((thought) =>
                 !thought
@@ -26,14 +26,15 @@ module.exports = {
             .then((thought) => {
                 return User.findOneAndUpdate(
                     { _id: req.body.userId },
-                    { $addToSet: { thoughts: thought._id } },
-                    { new: true }
+                    { $addToSet: { thoughts: thought._id }},
+                    // { $addToSet: { thoughts: req.body }},
+                    { runValidators: true, new: true }
                 );
             })
             .then((user) => {
                 !user
-                    ? res.status(404).json({ message: "No user ID" })
-                    : res.json(thought)
+                    ? res.status(404).json({ message: "Thought created without user ID" })
+                    : res.json(user)
             })
             .catch((err) => res.status(500).json(err));
     },
@@ -60,7 +61,7 @@ module.exports = {
           .then((user) =>
             !user
               ? res.status(404).json({ message: "No thought with request ID" })
-              : res.json(user)
+              : res.json({ message: "Thought deleted" })
           )
           .catch((err) => res.status(500).json(err));
       },
