@@ -42,26 +42,13 @@ module.exports = {
       .catch((err) => res.status(500).json(err));
   },
 
-  // delete a user by ID
-  // deleteUser(req, res) {
-  //   User.findOneAndDelete(
-  //     { _id: req.params.userId }
-  //   )
-  //     .then((user) =>
-  //       !user
-  //         ? res.status(404).json({ message: "No user with request ID" })
-  //         : res.json(user)
-  //     )
-  //     .catch((err) => res.status(500).json(err));
-  // },
-
   // delete a user and associated thought
   deleteUser(req, res) {
     User.findOneAndDelete({ _id: req.params.userId })
       .then((user) =>
         !user
           ? res.status(404).json({ message: 'No user with request ID' })
-          : Thought.deleteMany({ _id: { $in: user.thoughts } })
+          : Thought.deleteMany({ _id: { $in: User.thoughts } })
       )
       .then(() => res.json({ message: 'User and associated thought are deleted!' }))
       .catch((err) => res.status(500).json(err));
@@ -71,7 +58,6 @@ module.exports = {
   addFriend(req, res) {
     User.findOneAndUpdate(
       { _id: req.params.userId },
-      // { $push: { friends: req.params._id } },
       { $addToSet: { friends: req.body } },
       { runValidators: true, new: true }
     )
