@@ -52,7 +52,7 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
-  
+
   //delete thought and remove from associated user
   deleteThought(req, res) {
     Thought.findOneAndDelete(
@@ -73,22 +73,7 @@ module.exports = {
   addReaction(req, res) {
     Thought.findOneAndUpdate(
       { _id: req.params.thoughtId },
-      { $addToSet: { reactions: req.params.reactionId } },
-      { runValidators: true, new: true }
-    )
-      .then((user) =>
-        !user
-          ? res.status(404).json({ message: "No user with request ID" })
-          : res.json(user)
-      )
-      .catch((err) => res.status(500).json(err));
-  },
-
-  //delete reaction from thought's
-  deleteReaction(req, res) {
-    Thought.findOneAndUpdate(
-      { _id: req.params.thoughtId },
-      { $addToSet: { reactions: req.params.reactionId } },
+      { $addToSet: { reactions: req.body } },
       { new: true }
     )
       .then((user) =>
@@ -98,4 +83,20 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
+
+  //delete reaction and remove from associated thought
+  deleteReaction(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $pull: { reactions: { _id: req.params.reactionId } } },
+      { new: true }
+    )
+      .then((user) =>
+        !user
+          ? res.status(404).json({ message: "No user with request ID" })
+          : res.json(user)
+      )
+      .catch((err) => res.status(500).json(err));
+  },
+
 };
