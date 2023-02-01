@@ -9,7 +9,7 @@ module.exports = {
     },
 
     // get thought by ID
-    getSingleUser(req, res) {
+    getSingleThought(req, res) {
         Thought.findOne({ _id: req.params.userId })
             .select('-__v')
             .then((thought) =>
